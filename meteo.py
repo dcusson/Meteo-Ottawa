@@ -1,18 +1,25 @@
 from datetime import datetime, timedelta
 from meteostat import Daily
+import pandas as pd
 
 try:
     station_id = '71628'
     
-    # On définit la période pour inclure exactement les 7 jours avant aujourd'hui
-    fin = datetime.now() - timedelta(days=1)
-    debut = datetime.now() - timedelta(days=8)
+    # 1. On définit "aujourd'hui" comme minuit aujourd'hui (00:00:00)
+    aujourdhui_minuit = pd.Timestamp.now().normalize()
+    
+    # 2. On définit la fin à hier soir (23:59:59) et le début à 7 jours avant
+    fin = aujourdhui_minuit - timedelta(seconds=1)
+    debut = aujourdhui_minuit - timedelta(days=7)
     
     data = Daily(station_id, debut, fin)
     data = data.fetch()
     
-    # On prend les 7 premiers jours de la série (du plus vieux au plus récent)
-    data_final = data.head(7)
+    # 3. Sécurité supplémentaire : on filtre pour être certain de n'avoir que le passé
+    data = data[data.index < aujourdhui_minuit]
+    
+    # On prend les 7 derniers jours disponibles dans ce bloc
+    data_final = data.tail(7)
     
     lignes = ["Précipitations totales des 7 derniers jours :"]
     
