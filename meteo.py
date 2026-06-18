@@ -4,26 +4,29 @@ from meteostat import Daily
 try:
     station_id = '71628'
     
-    # On définit les dates simplement
-    # 'fin' est hier, 'debut' est 6 jours avant hier (donc 7 jours au total)
+    # Pour avoir 7 jours : fin = hier, debut = hier - 7 jours
+    # On utilise 8 jours pour la fenêtre de recherche afin d'être certain d'avoir 7 jours complets
     fin = datetime.now() - timedelta(days=1)
-    debut = datetime.now() - timedelta(days=7)
+    debut = datetime.now() - timedelta(days=8)
     
-    # Récupération directe des 7 jours
+    # Récupération des données
     data = Daily(station_id, debut, fin)
     data = data.fetch()
+    
+    # On force la sélection des 7 dernières lignes disponibles
+    data_final = data.tail(7)
     
     # Construction du rapport
     lignes = ["Précipitations totales des 7 derniers jours :"]
     
-    if not data.empty and 'prcp' in data.columns:
-        for date, row in data.iterrows():
+    if not data_final.empty and 'prcp' in data_final.columns:
+        for date, row in data_final.iterrows():
             date_str = date.strftime('%d/%m')
             valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0
             lignes.append(f"{date_str}: {valeur:.1f} mm")
         
         # Calcul du total
-        total_semaine = data['prcp'].fillna(0).sum()
+        total_semaine = data_final['prcp'].fillna(0).sum()
         lignes.append(f"Total: {total_semaine:.1f} mm")
     else:
         lignes.append("Données non disponibles")
