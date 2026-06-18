@@ -1,34 +1,30 @@
 from datetime import datetime, timedelta
-from meteostat import Daily
+from meteostat import Daily, Point
 
 try:
-    # ID de la station de l'aéroport international d'Ottawa
-    station_id = '71628'
+    # Coordonnées pour Ottawa
+    lat, lon = 45.4215, -75.6972
     
-    # Définition de la période : les 7 derniers jours (du plus ancien au plus récent)
-    # On prend une marge pour s'assurer d'avoir les 7 jours complets
-    fin = datetime.now() - timedelta(days=1)
-    debut = datetime.now() - timedelta(days=8)
+    # Définition de la période : les 7 derniers jours (excluant aujourd'hui)
+    aujourd_hui = datetime.now()
+    fin = aujourd_hui - timedelta(days=1)
+    debut = aujourd_hui - timedelta(days=7)
     
     # Récupération des données historiques
-    data = Daily(station_id, debut, fin)
-    data = data.fetch()
+    emplacement = Point(lat, lon)
+    donnees = Daily(emplacement, debut, fin)
+    donnees = donnees.fetch()
     
-    # Vérification si des données existent
-    if not data.empty and 'prcp' in data.columns:
-        # On remplace les valeurs manquantes (NaN) par 0, puis on fait la somme
-        pluie_totale = data['prcp'].fillna(0).sum()
-        
-        # On formate le résultat : une seule décimale
+    if not donnees.empty and 'prcp' in donnees.columns:
+        # On additionne toutes les précipitations de la semaine
+        pluie_totale = donnees['prcp'].sum()
+        # On formate le résultat pour avoir une décimale
         resultat = f"{pluie_totale:.1f}"
     else:
-        # Si aucune donnée n'est disponible pour la station
         resultat = "0.0"
-
-except Exception as e:
-    # En cas d'erreur de connexion ou autre, on inscrit 0.0
+except Exception:
     resultat = "0.0"
 
-# Écriture du résultat final dans le fichier texte pour votre Raccourci
+# Écriture du résultat final dans le fichier texte
 with open("resultat.txt", "w") as f:
     f.write(resultat)
