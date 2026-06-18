@@ -3,18 +3,18 @@ from meteostat import Daily
 
 try:
     station_id = '71628'
-    # On cherche sur une période large pour être sûr d'avoir assez de jours
-    fin = datetime.now() - timedelta(days=1)
+    # On demande une période assez longue pour être sûr de couvrir 7 jours complets passés
+    fin = datetime.now()
     debut = datetime.now() - timedelta(days=15)
     
     data = Daily(station_id, debut, fin)
     data = data.fetch()
     
-    # Exclure explicitement aujourd'hui
+    # Filtrage strict : on ne garde que les jours strictement antérieurs à aujourd'hui
     aujourd_hui = datetime.now().date()
     data = data[data.index.date < aujourd_hui]
     
-    # Prendre les 7 derniers jours disponibles
+    # On garde les 7 derniers jours de la liste filtrée
     data_final = data.tail(7)
     
     if not data_final.empty and 'prcp' in data_final.columns:
