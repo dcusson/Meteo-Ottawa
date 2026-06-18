@@ -1,32 +1,34 @@
 from datetime import datetime, timedelta
-import pytz
 from meteostat import Daily
 
 try:
     station_id = '71628'
-    # Utiliser le fuseau horaire d'Ottawa pour être précis
-    tz = pytz.timezone('America/Toronto')
-    hier = datetime.now(tz).date() - timedelta(days=1)
-    debut = hier - timedelta(days=6) # Pour avoir un bloc de 7 jours (hier compris)
+    # On demande une période assez longue pour être sûr de couvrir 7 jours complets passés
+    fin = datetime.now()
+    debut = datetime.now() - timedelta(days=15)
     
-    data = Daily(station_id, debut, hier)
+    data = Daily(station_id, debut, fin)
     data = data.fetch()
     
-    # On s'assure qu'on ne traite que les données jusqu'à hier inclus
-    data = data[data.index.date <= hier]
+    # Filtrage strict : on ne garde que les jours strictement antérieurs à aujourd'hui
+    aujourd_hui = datetime.now().date()
+    data = data[data.index.date < aujourd_hui]
     
-    if not data.empty and 'prcp' in data.columns:
+    # On garde les 7 derniers jours de la liste filtrée
+    data_final = data.tail(7)
+    
+    if not data_final.empty and 'prcp' in data_final.columns:
         lignes = []
-        for date, row in data.iterrows():
+        for date, row in data_final.iterrows():
             date_str = date.strftime('%d/%m')
             valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0
             lignes.append(f"{date_str}: {valeur:.1f} mm")
         
-        total_semaine = data['prcp'].fillna(0).sum()
+        total_semaine = data_final['prcp'].fillna(0).sum()
         lignes.append(f"Total: {total_semaine:.1f} mm")
         resultat = "\n".join(lignes)
     else:
-        resultat = "Données en attente"
+        resultat = "Données en cours de traitement"
 
 except Exception:
     resultat = "Erreur de lecture"
