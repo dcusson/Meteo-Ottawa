@@ -1,25 +1,22 @@
 from datetime import datetime, timedelta
+import pytz
 from meteostat import Daily
-import pandas as pd
 
 try:
     station_id = '71628'
+    # Utiliser le fuseau horaire d'Ottawa pour être précis
+    tz = pytz.timezone('America/Toronto')
+    hier = datetime.now(tz).date() - timedelta(days=1)
+    debut = hier - timedelta(days=6) # Pour avoir un bloc de 7 jours (hier compris)
     
-    # Calcul des dates en format texte YYYY-MM-DD pour éviter les conflits de types
-    maintenant = datetime.utcnow() - timedelta(hours=4)
-    hier_date = maintenant.date() - timedelta(days=1)
-    debut_date = hier_date - timedelta(days=6)
-    
-    # Récupération des données
-    data = Daily(station_id, debut_date, hier_date)
+    data = Daily(station_id, debut, hier)
     data = data.fetch()
     
-    # CORRECTION TOTALE : On convertit l'index en format texte (string) pour comparer
-    # Cela annule tous les problèmes de types entre datetime et pandas
-    data = data[data.index.strftime('%Y-%m-%d') <= str(hier_date)]
+    # On s'assure qu'on ne traite que les données jusqu'à hier inclus
+    data = data[data.index.date <= hier]
     
     if not data.empty and 'prcp' in data.columns:
-        lignes = ["Précipitations totales des 7 derniers jours :"]
+        lignes = []
         for date, row in data.iterrows():
             date_str = date.strftime('%d/%m')
             valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0
@@ -31,8 +28,8 @@ try:
     else:
         resultat = "Données en attente"
 
-except Exception as e:
-    resultat = f"Erreur de lecture: {str(e)}"
+except Exception:
+    resultat = "Erreur de lecture"
 
 with open("resultat.txt", "w") as f:
     f.write(resultat)
