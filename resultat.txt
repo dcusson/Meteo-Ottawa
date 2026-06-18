@@ -1,1 +1,1 @@
-Erreur de lecture: Invalid comparison between dtype=datetime64[ns] and date
+Erreur de lecture
