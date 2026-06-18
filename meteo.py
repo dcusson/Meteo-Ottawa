@@ -1,27 +1,29 @@
 from datetime import datetime, timedelta
-from meteostat import Daily
 import pandas as pd
+from meteostat import Daily
 
 try:
     station_id = '71628'
     
-    # 1. On définit "aujourd'hui" comme minuit aujourd'hui (00:00:00)
-    aujourdhui_minuit = pd.Timestamp.now().normalize()
+    # On définit "aujourd'hui" explicitement en date (sans heure)
+    aujourdhui = datetime.now().date()
     
-    # 2. On définit la fin à hier soir (23:59:59) et le début à 7 jours avant
-    fin = aujourdhui_minuit - timedelta(seconds=1)
-    debut = aujourdhui_minuit - timedelta(days=7)
+    # On demande une plage large pour être sûr d'avoir assez de jours (14 jours)
+    debut = aujourdhui - timedelta(days=14)
+    fin = aujourdhui
     
+    # Récupération
     data = Daily(station_id, debut, fin)
     data = data.fetch()
     
-    # 3. Sécurité supplémentaire : on filtre pour être certain de n'avoir que le passé
-    data = data[data.index < aujourdhui_minuit]
+    # FILTRE CRUCIAL : On ne garde que les lignes dont la date est STRICTEMENT INFÉRIEURE à aujourd'hui
+    data = data[data.index.date < aujourdhui]
     
-    # On prend les 7 derniers jours disponibles dans ce bloc
+    # On prend les 7 dernières lignes de ce résultat filtré
     data_final = data.tail(7)
     
-    lignes = ["Précipitations totales des 7 derniers jours :"]
+    # Construction du rapport
+    lignes = ["Précipitations totales des sept derniers jours :"]
     
     if not data_final.empty and 'prcp' in data_final.columns:
         for date, row in data_final.iterrows():
@@ -32,7 +34,7 @@ try:
         total_semaine = data_final['prcp'].fillna(0).sum()
         lignes.append(f"Total: {total_semaine:.1f} mm")
     else:
-        lignes.append("Données non disponibles")
+        lignes.append("Données en attente")
         
     resultat = "\n".join(lignes)
 
