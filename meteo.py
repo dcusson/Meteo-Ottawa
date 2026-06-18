@@ -17,7 +17,7 @@ try:
     data_final = data.tail(7)
     
     # Construction du rapport
-    lignes = ["Précipitations totales des 7 derniers jours :"]
+    lignes = ["Précipitations totales des sept derniers jours :"]
     
     if not data_final.empty and 'prcp' in data_final.columns:
         for date, row in data_final.iterrows():
