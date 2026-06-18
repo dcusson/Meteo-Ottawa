@@ -8,7 +8,7 @@ try:
     # Définition de la période : les 7 derniers jours (excluant aujourd'hui)
     aujourd_hui = datetime.now()
     fin = aujourd_hui - timedelta(days=1)
-    debut = aujourd_hui - timedelta(days=8)
+    debut = aujourd_hui - timedelta(days=7)
     
     # Récupération des données historiques
     emplacement = Point(lat, lon)
