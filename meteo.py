@@ -1,30 +1,29 @@
 from datetime import datetime, timedelta
-from meteostat import Daily, Point
+from meteostat import Daily
 
 try:
-    # Coordonnées pour Ottawa
-    lat, lon = 45.4215, -75.6972
+    station_id = '71628'
+    fin = datetime.now() - timedelta(days=1)
+    debut = datetime.now() - timedelta(days=7)
     
-    # Définition de la période : les 7 derniers jours (excluant aujourd'hui)
-    aujourd_hui = datetime.now()
-    fin = aujourd_hui - timedelta(days=1)
-    debut = aujourd_hui - timedelta(days=7)
+    data = Daily(station_id, debut, fin)
+    data = data.fetch()
     
-    # Récupération des données historiques
-    emplacement = Point(lat, lon)
-    donnees = Daily(emplacement, debut, fin)
-    donnees = donnees.fetch()
-    
-    if not donnees.empty and 'prcp' in donnees.columns:
-        # On additionne toutes les précipitations de la semaine
-        pluie_totale = donnees['prcp'].sum()
-        # On formate le résultat pour avoir une décimale
-        resultat = f"{pluie_totale:.1f}"
+    if not data.empty and 'prcp' in data.columns:
+        lignes = []
+        # On parcourt chaque jour de l'intervalle
+        for date, row in data.iterrows():
+            date_str = date.strftime('%d/%m') # Format : 10/06
+            valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0 # Gestion des NaN
+            lignes.append(f"{date_str}: {valeur:.1f} mm")
+        
+        # On joint tout avec des retours à la ligne
+        resultat = "\n".join(lignes)
     else:
-        resultat = "0.0"
-except Exception:
-    resultat = "0.0"
+        resultat = "Aucune donnée disponible"
 
-# Écriture du résultat final dans le fichier texte
+except Exception:
+    resultat = "Erreur de lecture"
+
 with open("resultat.txt", "w") as f:
     f.write(resultat)
