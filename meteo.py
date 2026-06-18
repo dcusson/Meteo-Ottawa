@@ -5,17 +5,18 @@ import pandas as pd
 try:
     station_id = '71628'
     
-    # Calcul manuel des dates (UTC-4 pour Ottawa)
+    # Calcul des dates en format texte YYYY-MM-DD pour éviter les conflits de types
     maintenant = datetime.utcnow() - timedelta(hours=4)
-    hier = maintenant.date() - timedelta(days=1)
-    debut = hier - timedelta(days=6)
+    hier_date = maintenant.date() - timedelta(days=1)
+    debut_date = hier_date - timedelta(days=6)
     
-    # Récupération
-    data = Daily(station_id, debut, hier)
+    # Récupération des données
+    data = Daily(station_id, debut_date, hier_date)
     data = data.fetch()
     
-    # CORRECTION : On convertit l'index de pandas en date pour permettre la comparaison
-    data = data[data.index.normalize() <= pd.Timestamp(hier)]
+    # CORRECTION TOTALE : On convertit l'index en format texte (string) pour comparer
+    # Cela annule tous les problèmes de types entre datetime et pandas
+    data = data[data.index.strftime('%Y-%m-%d') <= str(hier_date)]
     
     if not data.empty and 'prcp' in data.columns:
         lignes = ["Précipitations totales des 7 derniers jours :"]
