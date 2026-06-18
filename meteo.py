@@ -1,20 +1,21 @@
 from datetime import datetime, timedelta
 from meteostat import Daily
+import pandas as pd
 
 try:
     station_id = '71628'
     
-    # Calcul manuel : on prend maintenant (UTC), on enlève 4h pour le temps d'Ottawa
-    # et on prend le jour précédent pour être sûr.
-    maintenant_ottawa = datetime.utcnow() - timedelta(hours=4)
-    hier = maintenant_ottawa.date() - timedelta(days=1)
+    # Calcul manuel des dates (UTC-4 pour Ottawa)
+    maintenant = datetime.utcnow() - timedelta(hours=4)
+    hier = maintenant.date() - timedelta(days=1)
     debut = hier - timedelta(days=6)
     
+    # Récupération
     data = Daily(station_id, debut, hier)
     data = data.fetch()
     
-    # Filtrage strict
-    data = data[data.index.date <= hier]
+    # CORRECTION : On convertit l'index de pandas en date pour permettre la comparaison
+    data = data[data.index.normalize() <= pd.Timestamp(hier)]
     
     if not data.empty and 'prcp' in data.columns:
         lignes = ["Précipitations totales des 7 derniers jours :"]
@@ -30,7 +31,7 @@ try:
         resultat = "Données en attente"
 
 except Exception as e:
-    resultat = f"Erreur de lecture: {str(e)}" # Cela affichera la vraie erreur au lieu de juste "Erreur"
+    resultat = f"Erreur de lecture: {str(e)}"
 
 with open("resultat.txt", "w") as f:
     f.write(resultat)
