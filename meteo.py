@@ -1,45 +1,39 @@
-from datetime import datetime, timedelta
-import pandas as pd
+from datetime import datetime
 from meteostat import Daily
+import pandas as pd
 
 try:
     station_id = '71628'
-    
-    # On définit "aujourd'hui" explicitement en date (sans heure)
     aujourdhui = datetime.now().date()
-    
-    # On demande une plage large pour être sûr d'avoir assez de jours (14 jours)
-    debut = aujourdhui - timedelta(days=14)
+    # On demande une période assez large
+    debut = aujourdhui - timedelta(days=15)
     fin = aujourdhui
     
-    # Récupération
     data = Daily(station_id, debut, fin)
     data = data.fetch()
     
-    # FILTRE CRUCIAL : On ne garde que les lignes dont la date est STRICTEMENT INFÉRIEURE à aujourd'hui
-    data = data[data.index.date < aujourdhui]
+    # Vérification : on affiche les dates trouvées pour diagnostiquer
+    dates_disponibles = [d.strftime('%d/%m') for d in data.index]
     
-    # On prend les 7 dernières lignes de ce résultat filtré
-    data_final = data.tail(7)
+    # Filtrage manuel
+    data_filtree = data[data.index.date < aujourdhui]
+    data_final = data_filtree.tail(7)
     
-    # Construction du rapport
-    lignes = ["Précipitations totales des sept derniers jours :"]
-    
-    if not data_final.empty and 'prcp' in data_final.columns:
+    if data_final.empty:
+        resultat = f"DEBUG: Dates trouvées dans Meteostat: {dates_disponibles}. Aujourd'hui est {aujourdhui}"
+    else:
+        lignes = ["Précipitations totales des 7 derniers jours :"]
         for date, row in data_final.iterrows():
             date_str = date.strftime('%d/%m')
-            valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0
+            valeur = row['prcp'] if pd.notna(row['prcp']) else 0.0
             lignes.append(f"{date_str}: {valeur:.1f} mm")
         
-        total_semaine = data_final['prcp'].fillna(0).sum()
-        lignes.append(f"Total: {total_semaine:.1f} mm")
-    else:
-        lignes.append("Données en attente")
-        
-    resultat = "\n".join(lignes)
+        total = data_final['prcp'].fillna(0).sum()
+        lignes.append(f"Total: {total:.1f} mm")
+        resultat = "\n".join(lignes)
 
 except Exception as e:
-    resultat = f"Erreur de lecture: {str(e)}"
+    resultat = f"Erreur critique: {str(e)}"
 
 with open("resultat.txt", "w") as f:
     f.write(resultat)
