@@ -1,4 +1,4 @@
-Précipitations totales des sept derniers jours :
+Précipitations totales mesurées des sept derniers jours :
 11/06: 0.0 mm
 12/06: 7.4 mm
 13/06: 0.0 mm
