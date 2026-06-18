@@ -1,0 +1,31 @@
+name: Mise à jour Météo
+
+on:
+  schedule:
+    # S'exécute à 10h00 UTC tous les jours (soit 6h00 EDT)
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Permet de tester manuellement avec un bouton
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configuration de Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Installation des librairies
+        run: pip install -r requirements.txt
+      - name: Exécution du script
+        run: python meteo.py
+      - name: Sauvegarde du résultat
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add resultat.txt
+          git commit -m "Mise à jour quotidienne de la pluie" || exit 0
+          git push
