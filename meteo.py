@@ -10,7 +10,7 @@ try:
     aujourdhui = maintenant_ottawa.date()
     
     # 2. Générer la liste EXACTE des 8 derniers jours (du plus vieux au plus récent)
-    # Si aujourd'hui = 19 juin, cela génère du 12 au 18 juin.
+    # Si aujourd'hui = 19 juin, cela génère du 11 au 18 juin.
     dates_voulues = [(aujourdhui - timedelta(days=i)) for i in range(8, 0, -1)]
     
     # 3. Paramètres de recherche pour Meteostat
