@@ -6,6 +6,6 @@ Précipitations mesurées des huit derniers jours :
 15/06: 1.2 mm
 16/06: 6.8 mm
 17/06: 2.5 mm
-18/06: Donnée en attente (non publiée)
+18/06: Donnée en attente
 
 Total de 7 jours complets (hier exclu): 26.2 mm
