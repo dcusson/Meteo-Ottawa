@@ -2,9 +2,6 @@ from datetime import datetime, timedelta
 from meteostat import Daily
 import pandas as pd
 
-import sys
-print(sys.version)
-
 try:
     station_id = '71628'
     
