@@ -1,37 +1,47 @@
 from datetime import datetime, timedelta
 from meteostat import Daily
+import pandas as pd
 
 try:
     station_id = '71628'
     
-    # 1. On prend la date d'aujourd'hui (ex: 19 juin) et on la fixe à minuit pile (00:00:00)
-    aujourdhui = datetime.utcnow().date()
-    aujourdhui_dt = datetime(aujourdhui.year, aujourdhui.month, aujourdhui.day)
+    # 1. Obtenir l'heure d'Ottawa (UTC-4) de façon fiable
+    maintenant_ottawa = datetime.utcnow() - timedelta(hours=4)
+    aujourdhui = maintenant_ottawa.date()
     
-    # 2. La fin est hier soir à 23h59:59 (aujourd'hui minuit - 1 seconde)
-    fin_dt = aujourdhui_dt - timedelta(seconds=1)
+    # 2. Générer la liste EXACTE des 7 derniers jours (du plus vieux au plus récent)
+    # Si aujourd'hui = 19 juin, cela génère du 12 au 18 juin.
+    dates_voulues = [(aujourdhui - timedelta(days=i)) for i in range(7, 0, -1)]
     
-    # 3. Le début est 7 jours avant aujourd'hui à minuit (ex: 12 juin à 00:00:00)
-    debut_dt = aujourdhui_dt - timedelta(days=7)
+    # 3. Paramètres de recherche pour Meteostat
+    debut_dt = datetime.combine(dates_voulues[0], datetime.min.time())
+    fin_dt = datetime.combine(dates_voulues[-1], datetime.max.time())
     
-    # Récupération de la période exacte (du 12 à 00h00 jusqu'au 18 à 23h59)
     data = Daily(station_id, debut_dt, fin_dt)
     data = data.fetch()
     
-    # Construction de votre fichier texte
+    # 4. Construction de votre fichier texte
     lignes = ["Précipitations mesurées des sept derniers jours :"]
+    total_semaine = 0.0
     
-    if not data.empty and 'prcp' in data.columns:
-        for date, row in data.iterrows():
-            date_str = date.strftime('%d/%m')
-            valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0
+    # On boucle strictement sur nos 7 dates, une par une
+    for d in dates_voulues:
+        date_str = d.strftime('%d/%m')
+        d_timestamp = pd.Timestamp(d)
+        
+        # Si la date existe dans les données téléchargées
+        if not data.empty and d_timestamp in data.index:
+            valeur = data.loc[d_timestamp, 'prcp']
+            # Gérer le cas où la donnée existe mais est "NaN" (vide)
+            if pd.isna(valeur):
+                valeur = 0.0
             lignes.append(f"{date_str}: {valeur:.1f} mm")
-        
-        total_semaine = data['prcp'].fillna(0).sum()
-        lignes.append(f"Total: {total_semaine:.1f} mm")
-    else:
-        lignes.append("Données non disponibles")
-        
+            total_semaine += valeur
+        else:
+            # Si Meteostat n'a pas encore publié cette date
+            lignes.append(f"{date_str}: Donnée en attente (non publiée)")
+            
+    lignes.append(f"Total: {total_semaine:.1f} mm")
     resultat = "\n".join(lignes)
 
 except Exception as e:
