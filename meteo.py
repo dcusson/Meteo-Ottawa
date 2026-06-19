@@ -48,17 +48,17 @@ try:
         
         # Le dernier index (7) correspond à hier. On note s'il est publié ou non.
         if index == 7 and est_publie_ce_jour:
-            hier_est_publie = True
+            hier_est_publie = False
             
     # 5. Application de votre règle de calcul pour le total
     if hier_est_publie:
         # Cas 1 : 8 résultats complets -> Somme des 7 plus récents (on ignore le plus vieux à l'index 0)
         total_7_jours = sum(toutes_les_valeurs[1:])
-        texte_total = "Total des 7 derniers jours"
+        texte_total = "Total de 7 jours complets"
     else:
         # Cas 2 : Hier non publié -> Somme des 7 premiers complets (on ignore hier à l'index 7)
         total_7_jours = sum(toutes_les_valeurs[:7])
-        texte_total = "Total des 7 derniers jours complets (hier exclu)"
+        texte_total = "Total de 7 jours complets (hier exclu)"
     
     lignes.append("") # Ligne vide pour aérer la lecture
     lignes.append(f"{texte_total}: {total_7_jours:.1f} mm")
