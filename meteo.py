@@ -4,22 +4,21 @@ from meteostat import Daily
 try:
     station_id = '71628'
     
-    # 1. On calcule les dates "pures" (le jour actuel, sans se soucier de l'heure)
+    # 1. On prend la date d'aujourd'hui (ex: 19 juin) et on la fixe à minuit pile (00:00:00)
     aujourdhui = datetime.utcnow().date()
+    aujourdhui_dt = datetime(aujourdhui.year, aujourdhui.month, aujourdhui.day)
     
-    # 2. On recule d'un jour pour "fin", et de 6 jours de plus pour "début" (total = 7 jours)
-    fin_date = aujourdhui - timedelta(days=1)
-    debut_date = fin_date - timedelta(days=6)
+    # 2. La fin est hier soir à 23h59:59 (aujourd'hui minuit - 1 seconde)
+    fin_dt = aujourdhui_dt - timedelta(seconds=1)
     
-    # 3. On convertit au format précis attendu par Meteostat (à minuit pile)
-    debut_dt = datetime(debut_date.year, debut_date.month, debut_date.day)
-    fin_dt = datetime(fin_date.year, fin_date.month, fin_date.day)
+    # 3. Le début est 7 jours avant aujourd'hui à minuit (ex: 12 juin à 00:00:00)
+    debut_dt = aujourdhui_dt - timedelta(days=7)
     
-    # 4. Récupération directe, sans aucun filtrage compliqué
+    # Récupération de la période exacte (du 12 à 00h00 jusqu'au 18 à 23h59)
     data = Daily(station_id, debut_dt, fin_dt)
     data = data.fetch()
     
-    # 5. Construction de votre fichier texte
+    # Construction de votre fichier texte
     lignes = ["Précipitations mesurées des sept derniers jours :"]
     
     if not data.empty and 'prcp' in data.columns:
