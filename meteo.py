@@ -48,7 +48,7 @@ try:
         
         # Le dernier index (7) correspond à hier. On note s'il est publié ou non.
         if index == 7 and est_publie_ce_jour:
-            hier_est_publie = False
+            hier_est_publie = True
             
     # 5. Application de votre règle de calcul pour le total
     if hier_est_publie:
