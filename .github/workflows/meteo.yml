@@ -15,12 +15,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Remplacer @v3 par @v4
       - name: Checkout repository
-        uses: actions/checkout@v4
-      # 2. Remplacer @v4 par @v5
+        uses: actions/checkout@v5
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10' # Ou votre version actuelle de Python
       - name: Installation des librairies
