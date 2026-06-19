@@ -1,35 +1,34 @@
 from datetime import datetime, timedelta
 from meteostat import Daily
-import pandas as pd
 
 try:
     station_id = '71628'
     
-    # 1. On définit "aujourd'hui" comme minuit aujourd'hui (00:00:00)
-    aujourdhui_minuit = pd.Timestamp.now().normalize()
+    # 1. On calcule les dates "pures" (le jour actuel, sans se soucier de l'heure)
+    aujourdhui = datetime.utcnow().date()
     
-    # 2. On définit la fin à hier soir (23:59:59) et le début à 7 jours avant
-    fin = aujourdhui_minuit - timedelta(seconds=1)
-    debut = aujourdhui_minuit - timedelta(days=7)
+    # 2. On recule d'un jour pour "fin", et de 6 jours de plus pour "début" (total = 7 jours)
+    fin_date = aujourdhui - timedelta(days=1)
+    debut_date = fin_date - timedelta(days=6)
     
-    data = Daily(station_id, debut, fin)
+    # 3. On convertit au format précis attendu par Meteostat (à minuit pile)
+    debut_dt = datetime(debut_date.year, debut_date.month, debut_date.day)
+    fin_dt = datetime(fin_date.year, fin_date.month, fin_date.day)
+    
+    # 4. Récupération directe, sans aucun filtrage compliqué
+    data = Daily(station_id, debut_dt, fin_dt)
     data = data.fetch()
     
-    # 3. Sécurité supplémentaire : on filtre pour être certain de n'avoir que le passé
-    data = data[data.index < aujourdhui_minuit]
-    
-    # On prend les 7 derniers jours disponibles dans ce bloc
-    data_final = data.tail(7)
-    
+    # 5. Construction de votre fichier texte
     lignes = ["Précipitations mesurées des sept derniers jours :"]
     
-    if not data_final.empty and 'prcp' in data_final.columns:
-        for date, row in data_final.iterrows():
+    if not data.empty and 'prcp' in data.columns:
+        for date, row in data.iterrows():
             date_str = date.strftime('%d/%m')
             valeur = row['prcp'] if row['prcp'] == row['prcp'] else 0.0
             lignes.append(f"{date_str}: {valeur:.1f} mm")
         
-        total_semaine = data_final['prcp'].fillna(0).sum()
+        total_semaine = data['prcp'].fillna(0).sum()
         lignes.append(f"Total: {total_semaine:.1f} mm")
     else:
         lignes.append("Données non disponibles")
