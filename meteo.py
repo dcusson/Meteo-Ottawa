@@ -41,7 +41,7 @@ try:
                 est_publie_ce_jour = True
             lignes.append(f"{date_str}: {valeur_jour:.1f} mm")
         else:
-            lignes.append(f"{date_str}: Donnée en attente (non publiée)")
+            lignes.append(f"{date_str}: Donnée en attente")
             
         # On garde en mémoire la valeur (0.0 ou réelle) pour le calcul final
         toutes_les_valeurs.append(valeur_jour)
