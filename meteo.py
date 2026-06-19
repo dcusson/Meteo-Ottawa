@@ -9,8 +9,8 @@ try:
     maintenant_ottawa = datetime.utcnow() - timedelta(hours=4)
     aujourdhui = maintenant_ottawa.date()
     
-    # 2. Générer la liste EXACTE des 8 derniers jours (du plus vieux au plus récent)
-    # Si aujourd'hui = 19 juin, cela génère du 11 au 18 juin.
+    # 2. Générer la liste EXACTE des 8 derniers jours (excluant aujourd'hui)
+    # Du plus vieux au plus récent (ex: du J-8 jusqu'à hier)
     dates_voulues = [(aujourdhui - timedelta(days=i)) for i in range(8, 0, -1)]
     
     # 3. Paramètres de recherche pour Meteostat
@@ -21,27 +21,45 @@ try:
     data = data.fetch()
     
     # 4. Construction de votre fichier texte
-    lignes = ["Précipitations mesurées des 8 derniers jours :"]
-    total_semaine = 0.0
+    lignes = ["Précipitations mesurées des huit derniers jours :"]
     
-    # On boucle strictement sur nos 8 dates, une par une
-    for d in dates_voulues:
+    valeurs_8_jours = []
+    valeurs_7_derniers = []
+    
+    # On boucle sur nos 8 dates
+    for index, d in enumerate(dates_voulues):
         date_str = d.strftime('%d/%m')
         d_timestamp = pd.Timestamp(d)
+        valeur_jour = 0.0
         
         # Si la date existe dans les données téléchargées
         if not data.empty and d_timestamp in data.index:
             valeur = data.loc[d_timestamp, 'prcp']
-            # Gérer le cas où la donnée existe mais est "NaN" (vide)
-            if pd.isna(valeur):
-                valeur = 0.0
-            lignes.append(f"{date_str}: {valeur:.1f} mm")
-            total_semaine += valeur
+            # Si la valeur n'est pas vide (NaN)
+            if pd.notna(valeur):
+                valeur_jour = float(valeur)
+            lignes.append(f"{date_str}: {valeur_jour:.1f} mm")
         else:
-            # Si Meteostat n'a pas encore publié cette date
             lignes.append(f"{date_str}: Donnée en attente (non publiée)")
+            # valeur_jour reste à 0.0 pour ne pas fausser les totaux
             
-    lignes.append(f"Total: {total_semaine:.1f} mm")
+        # On ajoute la valeur au total des 8 jours
+        valeurs_8_jours.append(valeur_jour)
+        
+        # Le premier jour de la boucle (index 0) est le jour 8 (le plus ancien).
+        # Pour le total des 7 *derniers* jours (les plus récents), on l'ignore.
+        if index > 0:
+            valeurs_7_derniers.append(valeur_jour)
+            
+    # 5. Calcul et ajout des deux totaux
+    total_7_jours = sum(valeurs_7_derniers)
+    total_8_jours = sum(valeurs_8_jours)
+    
+    # J'ai ajouté une ligne vide pour espacer les résultats des totaux
+    lignes.append("") 
+    lignes.append(f"Total des 7 derniers jours: {total_7_jours:.1f} mm")
+    lignes.append(f"Total des 8 derniers jours: {total_8_jours:.1f} mm")
+    
     resultat = "\n".join(lignes)
 
 except Exception as e:
