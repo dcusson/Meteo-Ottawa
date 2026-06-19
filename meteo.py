@@ -9,9 +9,9 @@ try:
     maintenant_ottawa = datetime.utcnow() - timedelta(hours=4)
     aujourdhui = maintenant_ottawa.date()
     
-    # 2. Générer la liste EXACTE des 7 derniers jours (du plus vieux au plus récent)
+    # 2. Générer la liste EXACTE des 8 derniers jours (du plus vieux au plus récent)
     # Si aujourd'hui = 19 juin, cela génère du 12 au 18 juin.
-    dates_voulues = [(aujourdhui - timedelta(days=i)) for i in range(7, 0, -1)]
+    dates_voulues = [(aujourdhui - timedelta(days=i)) for i in range(8, 0, -1)]
     
     # 3. Paramètres de recherche pour Meteostat
     debut_dt = datetime.combine(dates_voulues[0], datetime.min.time())
@@ -21,10 +21,10 @@ try:
     data = data.fetch()
     
     # 4. Construction de votre fichier texte
-    lignes = ["Précipitations mesurées des sept derniers jours :"]
+    lignes = ["Précipitations mesurées des 8 derniers jours :"]
     total_semaine = 0.0
     
-    # On boucle strictement sur nos 7 dates, une par une
+    # On boucle strictement sur nos 8 dates, une par une
     for d in dates_voulues:
         date_str = d.strftime('%d/%m')
         d_timestamp = pd.Timestamp(d)
