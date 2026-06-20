@@ -63,6 +63,11 @@ try:
     lignes.append("") # Ligne vide pour aérer la lecture
     lignes.append(f"{texte_total}: {total_7_jours:.1f} mm")
     
+    # --- AJOUT : Ligne de date du relevé ---
+    horodatage = maintenant_ottawa.strftime("%d/%m/%Y à %Hh%M")
+    lignes.append(f"Date du relevé : {horodatage}")
+    # ---------------------------------------
+    
     resultat = "\n".join(lignes)
 
 except Exception as e:
