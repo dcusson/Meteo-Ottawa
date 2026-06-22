@@ -2,15 +2,15 @@ name: Mise à jour Météo
 
 on:
   schedule:
-    # --- CÉDULE QUOTIDIENNE (En pause) ---
+    # --- CÉDULE QUOTIDIENNE ---
     # S'exécute à 12h15 UTC tous les jours (soit 8h15 EDT)
     # EC publie ses relevés à 10h UTC. Nous ajoutons 2 heures de délai pour que MeteoStat puisse récupérer les données mondiales et mettre à jour ses bases de données.
     # En plus, nous évitons l'heure juste afin d'éviter l'engorgement du serveur par des millions de demandes automatiques mondiales aux heures piles. 
-    # - cron: '15 12 * * *'
+    - cron: '15 12 * * *'
 
     # --- CÉDULE DE TEST (Horaire) ---
     # S'exécute à la 15e minute de chaque heure (ex: 11h15, 12h15, 13h15...)
-    - cron: '15 * * * *'
+    # - cron: '15 * * * *'
     
   workflow_dispatch: # Permet de tester manuellement avec un bouton
 
