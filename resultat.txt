@@ -1,5 +1,4 @@
 Précipitations mesurées des huit derniers jours :
-16/06: 0.0 mm
 17/06: 0.0 mm
 18/06: 16.9 mm
 19/06: 13.7 mm
@@ -7,6 +6,7 @@ Précipitations mesurées des huit derniers jours :
 21/06: 0.0 mm
 22/06: 6.0 mm
 23/06: 0.0 mm
+24/06: 0.0 mm
 
 Total de 7 jours complets: 44.1 mm
-Date du relevé : 24/06/2026 à 14h22
+Date du relevé : 25/06/2026 à 15h26
