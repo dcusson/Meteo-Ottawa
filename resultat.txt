@@ -1,12 +1,12 @@
 Précipitations mesurées des huit derniers jours :
-23/07: 0.0 mm
-24/07: 0.0 mm
-25/07: 0.0 mm
-26/07: 0.0 mm
-27/07: 0.0 mm
-28/07: 12.1 mm
-29/07: 1.9 mm
-30/07: 0.0 mm
+24/07: Donnée en attente
+25/07: Donnée en attente
+26/07: Donnée en attente
+27/07: Donnée en attente
+28/07: Donnée en attente
+29/07: Donnée en attente
+30/07: Donnée en attente
+31/07: Donnée en attente
 
-Total de 7 jours complets: 14.0 mm
-Date du relevé : 31/07/2026 à 10h30
+Total de 7 jours complets (hier exclu): 0.0 mm
+Date du relevé : 01/08/2026 à 09h50
