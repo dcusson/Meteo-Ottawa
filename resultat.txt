@@ -1,5 +1,4 @@
 Précipitations mesurées des huit derniers jours :
-27/07: 26.2 mm
 28/07: 37.6 mm
 29/07: 21.9 mm
 30/07: 0.0 mm
@@ -7,6 +6,7 @@ Précipitations mesurées des huit derniers jours :
 01/08: 1.0 mm
 02/08: 54.1 mm
 03/08: 9.7 mm
+04/08: 0.0 mm
 
-Total de 7 jours complets: 124.3 mm
-Date du relevé : 04/08/2026 à 10h36
+Total de 7 jours complets: 86.7 mm
+Date du relevé : 05/08/2026 à 10h29
