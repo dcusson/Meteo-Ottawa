@@ -1,5 +1,4 @@
 Précipitations mesurées des huit derniers jours :
-03/09: 0.0 mm
 04/09: 0.0 mm
 05/09: 0.0 mm
 06/09: 0.0 mm
@@ -7,6 +6,7 @@ Précipitations mesurées des huit derniers jours :
 08/09: 0.0 mm
 09/09: 0.0 mm
 10/09: 0.0 mm
+11/09: 5.2 mm
 
-Total de 7 jours complets: 0.0 mm
-Date du relevé : 11/09/2026 à 12h24
+Total de 7 jours complets: 5.2 mm
+Date du relevé : 12/09/2026 à 11h28
