@@ -1,5 +1,4 @@
 Précipitations mesurées des huit derniers jours :
-19/10: 0.0 mm
 20/10: 0.0 mm
 21/10: 0.0 mm
 22/10: 0.0 mm
@@ -7,6 +6,7 @@ Précipitations mesurées des huit derniers jours :
 24/10: 0.0 mm
 25/10: 0.0 mm
 26/10: 0.0 mm
+27/10: Donnée en attente
 
-Total de 7 jours complets: 0.0 mm
-Date du relevé : 27/10/2026 à 13h56
+Total de 7 jours complets (hier exclu): 0.0 mm
+Date du relevé : 28/10/2026 à 14h19
